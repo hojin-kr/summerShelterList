@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <!-- jquery CDN 로드-->
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?clientId=TEebSDqFMsshQHaJy0Wz&submodules=geocoder"></script>
+    <!--네이버 지도 API -->
+    <script>
+
+    /*전역변수 선언*/
+    var thLoading = 0;
+    /*테이블헤더를 한번만 표시하기 위한 변수*/
+    var j = 26685;
+    /*데이터의 첫 인덱스*/
+
+    $(function(){
+      $("button[name='addtionLoading']").on("click", function(){
+        /*
+        button 요소 name 속성 값이 'addtionLoading'인 요소를 선택
+        해당 요소가 클릭되면 아래 함수를 실행
+         */
+        $.ajax({
+          url: "전국무더위쉼터표준데이터.json",
+          /*클라이언트가 요청을 보낼 서버의 주소*/
+          dataType: "json"
+          /*서버에서 보내줄 데이터의 타입*/
+        })
+        .done(function(json){
+          /*
+          ajax 요청 성공시 실행
+          json객체에 데이터 저장
+          */
+          console.log("요청 성공");
+          console.log(json);
+
+          if(thLoading == 0){
+            /*th요소를(table의 제목 요소)출력 했었는지 확인*/
+            for (var i in json.fields){
+              $("tr[class='titleTable']").append("<th>"+ json.fields[i].id+"</th>");
+              if(i == 6)
+              /*인덱스 6까지만 출력 */
+                break;
+            }
+            thLoading = 1;
+            /*테이블헤더를 한번만 표시하도록 설정*/
+          }
+
+          var listLimit = j + 3;
+          /*한 번에 표시할 데이터의 갯수를 제한*/
+
+          for ( j; j < listLimit; j++){
+            /*
+            전달 받은 JSON 데이터를 테이블 형식으로 출력
+            */
+            $("table[class='infoTable']").append("<tr><td>" + "<a onclick='naverMap("+ json.records[j].위도+","+ json.records[j].경도 + ")'>"+ json.records[j].쉼터명 + "</a>" + "</td>" +
+              "<td>" + json.records[j].법정동명 + "</td>"+
+              "<td>" + json.records[j].쉼터유형구분 +
+              "</td>" + "<td>" + json.records[j].운영시작일자 + "</td>" +
+              "<td>" + json.records[j].운영종료일자 + "</td>"+
+              "<td>" + json.records[j].시설면적 + "</td>" +
+              "<td>" + json.records[j].이용가능인원수 + "</td></tr>");
+          }/*/for(j;j<listLimit;j++)*/
+        }) /*/.don(function)(json){}*/
+
+        .fail(function(){
+          /*ajax 요청이 실패 했을 경우 실행*/
+          console.log("요청 실패");
+        })
+        .always(function(){
+          /*ajax 요청 후 항상 실행*/
+          console.log("요청 마무리");
+        })
+      });
+    });
+
+    /*네이버 지도 API
+    Static지도 (이미지)를 가져와서
+    id가 mapsImg인 img 태그에 출력
+    */
+    function naverMap(x, y){
+      /*JSON데이터에서 위도 경도 데이터를 받아와서
+      네이버 api를 통해 고정 지도 이미지를 불러온다.
+      api의 필요 요소 : 인증키, url, x좌표, y좌표
+      */
+      $("img[id='mapsImg']").attr("src","https://openapi.naver.com/v1/map/staticmap.bin?clientId=TEebSDqFMsshQHaJy0Wz&url=http://127.0.0.1:58655&crs=EPSG:4326&center="+ y +","+ x + "&level=11&w=300&h=300&baselayer=default&markers="+ y +","+x);
+      /*id속성 값이 mapsImg인 img 요소의 src 속성값을 설정*/
+    }
+
+    </script>
+    <style>
+      body{
+        text-align: center;
+        /*body의 텍스트 컨텐트 가운대 정렬*/
+      }
+      .infoTable{
+        margin: 0 auto;
+        /*테이블 가운대 정렬*/
+      }
+
+      table th, td{
+        border: 1px solid black;
+        /*테이블 테두리 설정*/
+      }
+      table{
+        border-collapse: collapse;
+        /*테이블 테두리 설정 변경*/
+      }
+      img{
+        margin-top: 20px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <h1>| 전국 무더위 쉼터 목록 |</h1>
+    <table class="infoTable">
+      <!--  목록을 테이블 형식으로 표시 -->
+      <tr class="titleTable"><!-- <th> 요소 표시 --></tr>
+      <!-- <td> 요소 표시-->
+    </table>
+    <img src="" id="mapsImg">
+    <!-- 지도 이미지가 표시될 요소 -->
+    <br><hr>
+    <button type="button" name="addtionLoading">불러오기</button>
+    <!-- 버튼이 클릭되면 ajax를 이용해 데이터를 불러온다-->
+  </body>
+</html>
