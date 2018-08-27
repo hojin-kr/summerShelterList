@@ -14,6 +14,6 @@ https://www.data.go.kr/
 - API
 네이버 지도 API StaticMap
 
-
+TCPSCHOOL(http://tcpschool.com/), CODINGSAM(http://codingsam.com/) 교육자료로 제작되었음.
 
 ![image](https://user-images.githubusercontent.com/22079767/44182426-e31bdb80-a141-11e8-8ee3-dffe23297c39.png)
